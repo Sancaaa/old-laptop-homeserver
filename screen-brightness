@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# Make sure that the file is in /usr/local/bin/ (ubuntu exxample)
+# Make sure that the file has 755 permission
+
+percent="$1"
+bl="/sys/class/backlight/intel_backlight"
+if [ ! -d "$bl" ]; then
+        echo "Backlight device not found"
+        return 1
+fi
+
+max=$(cat "$bl/max_brightness")
+
+if [ -z "$percent" ] || [ "$percent" -lt 0 ] || [ "$percent" -gt 100 ]; then                        >        echo "Usage: screen-brightness <0-100>%"
+        return 1
+fi
+
+value=$(( max * percent / 100 ))
+
+if [ "$(id -u)" -ne 0 ]; then
+        echo "value" | sudo tee "$bl/brightness" > /dev/null
+else
+        echo "value" > "$bl/brightness"
+fi
